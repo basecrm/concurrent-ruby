@@ -52,6 +52,9 @@ module Concurrent
         if (time - Time.now.to_f) <= 0.01
           @task_executor.post(*args, &task)
         else
+          if defined?(Rails) && Rails.logger
+            Rails.logger.info("[ConcurrentRuby] TimetSet#post with #{time}, #{args.inspect}")
+          end
           @queue.push(Task.new(time, args, task))
           @timer_executor.post(&method(:process_tasks))
         end
@@ -103,6 +106,9 @@ module Concurrent
       include Comparable
 
       def <=>(other)
+        if defined?(Rails) && Rails.logger
+          Rails.logger.info("[ConcurrentRuby] Task#<=> with #{self.inspect} and #{other.inspect}")
+        end
         self.time <=> other.time
       end
     end
