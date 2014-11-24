@@ -109,7 +109,10 @@ module Concurrent
         if defined?(Rails) && Rails.logger
           Rails.logger.info("[ConcurrentRuby] Task#<=> with #{self.inspect} and #{other.inspect}")
         end
-        self.time <=> other.time
+
+        ErrorReporter.rescue_and_reraise do
+          self.time <=> other.time
+        end
       end
     end
 
