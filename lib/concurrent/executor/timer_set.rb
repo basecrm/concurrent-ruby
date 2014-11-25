@@ -103,7 +103,12 @@ module Concurrent
       include Comparable
 
       def <=>(other)
-        self.time <=> other.time
+        ErrorReporter.context(current: self.inspect, other: other.inspect)
+        begin
+          self.time <=> other.time
+        rescue Exception => e
+          ErrorReporter.handle_and_reraise(e)
+        end
       end
     end
 
